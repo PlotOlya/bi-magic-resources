@@ -6,7 +6,7 @@
   "scripts": {
     "pull": "node scripts/pull.js",
     "push": "yarn build && yarn _push",
-    "start": "node scripts/start-react.js",
+    "start": "node --openssl-legacy-provider scripts/start-react.js",
     "test": "./node_modules/.bin/jest --passWithNoTests",
     "build": "rimraf dist && yarn test && webpack --env build",
     "_push": "node scripts/push.js",
@@ -45,14 +45,13 @@
   "homepage": "https://gito.luxms.com/luxmsbi/luxmsbi-web-internal",
   "dependencies": {
     "@react-three/drei": "^8.10.6",
+    "echarts": "^5.4.1",
+    "echarts-for-react": "^3.0.2",
     "format-number-with-string": "^0.0.2",
     "iscroll": "^5.2.0",
     "jquery": "^3.6.0",
     "kerberos": "^2.0.1",
     "three": "^0.136.0"
-  },
-  "optionalDependencies": {
-    "node-expose-sspi": "^0.1.60"
   },
   "devDependencies": {
     "@babel/cli": "7.12.10",
