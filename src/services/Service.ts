@@ -20,13 +20,12 @@ export  class MyService extends BaseService<IMyServiceModel> {
     });
     this.id = koobId;
     const dimensions = [
-      'id_dt', // столбцы из куба 
       'val_ru',
-      'business_name',
-'	client'
+      'id_dt',
+      'client'
     ]
     Promise.all(dimensions.map(dim => fetch(`api/v3/koob/${koobId}.${dim}`).then(resp => resp.json()))).then(responses => {
-      console.log(responses);
+      console.log("RESPOSES", responses);
       let dictionaries = {};
       dimensions.map((dim, i) => {
         if (!dictionaries.hasOwnProperty(dim)) {
@@ -87,7 +86,9 @@ export  class MyService extends BaseService<IMyServiceModel> {
       return '';
     }
   }
-
+  public setFilters(filters) {
+    this._updateWithData({ filters });
+  }
   protected _dispose() {
     if (window.__myService && window.__myService[String(this.id)]) {
       delete window.__myService[String(this.id)];

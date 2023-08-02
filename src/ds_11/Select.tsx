@@ -1,9 +1,7 @@
 import React from "react";
-import './MyCustomComponent.scss';
 import cn from 'classnames';
 import * as echarts from 'echarts';
 import {MyService} from "../services/Service";
-import {ThemeVC} from "bi-internal/services";
 import {UrlState} from "bi-internal/core";
 
 export default class Select extends React.Component<any> {
@@ -13,64 +11,72 @@ export default class Select extends React.Component<any> {
   public state: {
     data: any;
     theme: any;
+    filters: any;
   };
 
   public constructor(props) {
     super(props);
     this.state = {
       data: [],
-      theme: {}
+      theme: {},
+      filters: []
     };
   }
 
   public componentDidMount(): void {
-    ThemeVC.getInstance().subscribeUpdatesAndNotify(this._onThemeVCUpdated);
+ 
     const {cfg} = this.props;
     const koob = cfg.getRaw().koob;
     this._myService = MyService.createInstance(koob);
     this._myService.subscribeUpdatesAndNotify(this._onSvcUpdated);
   }
-  private _onThemeVCUpdated = (themeVM): void => {
-    if (themeVM.error || themeVM.loading) return;
-    this.setState({theme: themeVM.currentTheme});
-  }
+
   private _onSvcUpdated = (model) => {
     const {cfg} = this.props;
     const koob = cfg.getRaw().koob || "oracle.orders_full";
     const filters = cfg.getRaw().dataSource?.filters || {};
+   
     if (model.loading || model.error) return;
     this._myService.getKoobDataByCfg({
       with: koob,
       columns: [
-        'id_dt', // столбцы из куба 
         'val_ru',
-        'business_name',
+        'id_dt',
         'client'
       ],
       filters: {
         ...model.filters,
-      }
+      },
+      limit:50,
     }).then(data => {
-      console.log(data);
-      this.setState({data: data});
+      this.setState({data: model.dictionaries});
+      this.setState({ filters: [...this.state.filters,...model.dictionaries.client.values] })
     })
   }
-  public componentWillUnmount() {
-    ThemeVC.getInstance().unsubscribe(this._onThemeVCUpdated);
+
+  private handleSubmit() {
+    this._myService.setFilters({ client: this.state.filters })
+    // console.log('->>',this.state.filters);
+    
+  } 
+
+  private handleChange(event) {
+    const selectedValue = event.target.value;
+      this.setState({ filters: [ selectedValue] })
+    
   }
+
   public render() {
-    const { data, theme} = this.state;
+    const { data} = this.state;
     return (
       <div>
-        {data.map(el =>
-          <>
-          <input id={el} type='checkbox' />
-            <label> {el}</label>
-            {/* <div>{el.title}</div>
-            <div>{el.value}</div> */}
-          </>
-        )}
-      </div>
+        <select onChange={(e) => this.handleChange(e)}>
+      {data.client?.values.map(el =>
+      <option value={el} >{el}</option>
+      )}
+      </select >
+        <button type='button' onClick={() => this.handleSubmit()}>Выбрать</button>
+    </div>
     );
   }
 }
