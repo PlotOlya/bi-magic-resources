@@ -9,6 +9,7 @@ export interface IMyServiceModel{
   dictionaries: any
 }
 export  class MyService extends BaseService<IMyServiceModel> {
+ 
   private readonly id: string | number;
   private constructor(koobId: string) {
     super({
@@ -25,7 +26,7 @@ export  class MyService extends BaseService<IMyServiceModel> {
       'client'
     ]
     Promise.all(dimensions.map(dim => fetch(`api/v3/koob/${koobId}.${dim}`).then(resp => resp.json()))).then(responses => {
-      console.log("RESPOSES", responses);
+      console.log( responses);
       let dictionaries = {};
       dimensions.map((dim, i) => {
         if (!dictionaries.hasOwnProperty(dim)) {
@@ -71,6 +72,8 @@ export  class MyService extends BaseService<IMyServiceModel> {
       });
 
       let data = response.data;
+      
+      
 
       if (String(response.headers['content-type']).startsWith('application/stream+json')) {
         if (typeof data === 'string') {
@@ -79,15 +82,20 @@ export  class MyService extends BaseService<IMyServiceModel> {
           data = [data];
         }
       }
-
+   
       return data;
 
     } catch (e) {
-      return '';
+      console.log(e);
+      
+      return ;
     }
   }
+  
   public setFilters(filters) {
     this._updateWithData({ filters });
+  
+  
   }
   protected _dispose() {
     if (window.__myService && window.__myService[String(this.id)]) {

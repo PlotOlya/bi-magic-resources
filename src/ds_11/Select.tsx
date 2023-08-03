@@ -1,6 +1,4 @@
 import React from "react";
-import cn from 'classnames';
-import * as echarts from 'echarts';
 import {MyService} from "../services/Service";
 import {UrlState} from "bi-internal/core";
 
@@ -36,35 +34,18 @@ export default class Select extends React.Component<any> {
     const koob = cfg.getRaw().koob || "oracle.orders_full";
     const filters = cfg.getRaw().dataSource?.filters || {};
    
-    if (model.loading || model.error) return;
-    this._myService.getKoobDataByCfg({
-      with: koob,
-      columns: [
-        'val_ru',
-        'id_dt',
-        'client'
-      ],
-      filters: {
-        ...model.filters,
-      },
-      limit:50,
-    }).then(data => {
       this.setState({data: model.dictionaries});
-      this.setState({ filters: [...this.state.filters,...model.dictionaries.client.values] })
-    })
+      
   }
-
-  private handleSubmit() {
-    this._myService.setFilters({ client: this.state.filters })
-    // console.log('->>',this.state.filters);
-    
-  } 
-
   private handleChange(event) {
     const selectedValue = event.target.value;
       this.setState({ filters: [ selectedValue] })
     
   }
+  private handleSubmit() {
+    this._myService.setFilters({ client: ["=", ...this.state.filters] })
+  
+  } 
 
   public render() {
     const { data} = this.state;
