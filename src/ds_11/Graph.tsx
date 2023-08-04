@@ -39,9 +39,8 @@ private _myService: MyService;
 
   private _onSvcUpdated = (model) => {
     const {cfg} = this.props;
-    const koob = cfg.getRaw().koob || "oracle.orders_full";
+    const koob = cfg.getRaw().dataSource?.koob || "oracle.orders_full";
     const filters = cfg.getRaw().dataSource?.filters || {};
-
 
     if (model.loading || model.error) return;
     this._myService.getKoobDataByCfg({
@@ -62,17 +61,19 @@ private _myService: MyService;
     private _onSrvcUpdated = (model) => {
       if (model.loading || model.error) return;
       if (model.hasOwnProperty('table')) {
+        this.setState({ table: !this.state.table })
       }}
+
 private handleChangeView () { 
   this._urlService.navigate({ table: String(!this.state.table) })
-  this.setState({ table: !this.state.table })
+
 }
+
 public render() {
     const { data} = this.state;
-  
     this.state.option=  {
       xAxis: {
-        data: [...this.state.data.sort((a, b) => new Date(b.id_dt) - new Date(a.id_dt)).map((el) => el.id_dt)]
+        data: [...this.state.data.map((el) => el.id_dt)]
       },
       yAxis: {},
       series: [
@@ -87,7 +88,6 @@ public render() {
    
       return (
         <>
-
      {!this.state.table? 
      ( <div className="ComponentWrapper MyCustomComponent">
               <ReactECharts option={this.state.option} />
@@ -116,7 +116,6 @@ public render() {
             </tbody>
           </table>
         )}
-     
         <button type='button' onClick={() => this.handleChangeView()}>Показать другой вид</button>
         </>
         ); 

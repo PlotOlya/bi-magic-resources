@@ -22,29 +22,26 @@ export default class Select extends React.Component<any> {
   }
 
   public componentDidMount(): void {
- 
     const {cfg} = this.props;
-    const koob = cfg.getRaw().koob;
+    const koob = cfg.getRaw().dataSource?.koob;
     this._myService = MyService.createInstance(koob);
     this._myService.subscribeUpdatesAndNotify(this._onSvcUpdated);
   }
 
   private _onSvcUpdated = (model) => {
     const {cfg} = this.props;
-    const koob = cfg.getRaw().koob || "oracle.orders_full";
+    const koob = cfg.getRaw().dataSource?.koob || "oracle.orders_full";
     const filters = cfg.getRaw().dataSource?.filters || {};
-   
-      this.setState({data: model.dictionaries});
-      
+    this.setState({data: model.dictionaries});
   }
+
   private handleChange(event) {
     const selectedValue = event.target.value;
       this.setState({ filters: [ selectedValue] })
-    
   }
+
   private handleSubmit() {
     this._myService.setFilters({ client: ["=", ...this.state.filters] })
-  
   } 
 
   public render() {

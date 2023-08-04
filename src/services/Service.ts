@@ -39,10 +39,8 @@ export  class MyService extends BaseService<IMyServiceModel> {
   public async getKoobDataByCfg(cfg): Promise<any> {
     const url: string = AppConfig.fixRequestUrl(`/api/v3/koob/data`);
     const columns = cfg.columns;
-
     let filters = {};
     if (cfg.filters) filters = {...cfg.filters};
-
     const body: any = {
       with: cfg.with,
       columns,
@@ -73,8 +71,6 @@ export  class MyService extends BaseService<IMyServiceModel> {
 
       let data = response.data;
       
-      
-
       if (String(response.headers['content-type']).startsWith('application/stream+json')) {
         if (typeof data === 'string') {
           data = data.split('\n').filter((line: string) => !!line).map((line: string) => JSON.parse(line));
@@ -82,7 +78,6 @@ export  class MyService extends BaseService<IMyServiceModel> {
           data = [data];
         }
       }
-   
       return data;
 
     } catch (e) {
